@@ -45,6 +45,12 @@ func (s *State) pathClear(src uint8, dst uint8) bool {
 
 }
 
+type Key struct {
+	h      [11]uint8
+	mobile [4]uint8
+	empty  [4]uint8
+}
+
 const free = 4
 
 var (
@@ -52,6 +58,7 @@ var (
 	spots        [7]uint8 = [7]uint8{0, 1, 3, 5, 7, 9, 10}
 	m            [][4]uint8
 	stack        []State
+	visited      map[Key]uint32
 	target       uint32      = 0
 	minCosts     [][5]uint32 = [][5]uint32{
 		{0, 2, 5, 10, 17},
@@ -128,6 +135,7 @@ func processInput(chars []byte) (uint32, time.Duration) {
 
 	target = 0
 	stack = []State{s}
+	visited = make(map[Key]uint32)
 
 	for len(stack) > 0 {
 		n := len(stack) - 1
@@ -232,7 +240,11 @@ func run(s *State) {
 						next.empty[c]++
 						next.mobile[c]--
 						next.cost = cost
-						stack = append(stack, next)
+						key := Key{h: next.h, empty: next.empty, mobile: next.mobile}
+						if _, ok := visited[key]; !ok || cost < visited[key] {
+							stack = append(stack, next)
+							visited[key] = cost
+						}
 					}
 				}
 			}
