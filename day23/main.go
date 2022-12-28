@@ -241,7 +241,7 @@ func run(s *State) {
 						next.mobile[c]--
 						next.cost = cost
 						key := Key{h: next.h, empty: next.empty, mobile: next.mobile}
-						if _, ok := visited[key]; !ok || cost < visited[key] {
+						if value, ok := visited[key]; !ok || cost < value {
 							stack = append(stack, next)
 							visited[key] = cost
 						}
